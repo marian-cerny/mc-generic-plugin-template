@@ -114,7 +114,7 @@ class mc_gp_plugin
 		// ENQUEUE PLUGIN-NAME.JS SCRIPT
 		wp_enqueue_script( 
 			$this->plugin_slug, 
-			$this->plugin_url . $this->plugin_slug . '.js',
+			$this->plugin_url . '/' . $this->plugin_slug . '.js',
 			array( 'jquery' ),
 			$this->plugin_version
 		);
@@ -138,9 +138,12 @@ class mc_gp_plugin
 		{
 			foreach( $a_setting['fields'] as $s_field_key => $m_field ) 
 			{		
+				// get options if they are set, or get defaults if not set
 				$this->settings[$s_setting_key]['fields'][$s_field_key]['value'] 
 					= get_option( $this->plugin_namespace . $s_field_key, $m_field['value'] );
-				
+					
+				// write all options in DB in case they were not set
+				update_option( $this->plugin_namespace . $s_field_key, $this->get_setting( $s_field_key ) );
 			}
 		}
 	}
@@ -218,8 +221,6 @@ class mc_gp_plugin
 		<div class="wrap">
 		<h2><?php echo $this->plugin_name; ?> Settings</h2>
 		
-        <p>Generic plugin settings</p>
-		
 		<form method="post" action="options.php">
 		
 			<?php
@@ -281,6 +282,7 @@ class mc_gp_plugin
 			else
 				$s_output .= "value='".get_option( $this->plugin_namespace . $args['name'] )."'";
 				
+			if ( !empty( $args['description'] ) )
 			$s_output .= "/> (" . $args['description'] . ")";
 			
 			echo $s_output;	
