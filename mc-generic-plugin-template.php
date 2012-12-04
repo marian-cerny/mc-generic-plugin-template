@@ -121,7 +121,7 @@ class mc_gp_plugin
 		
 		// PASS PLUGIN SETTINGS TO THE SCRIPT
 		$a_ajax_vars = array(
-			'settings' => $this->settings,
+			'settings' => $this->get_settings_array(),
 		);		
 		wp_localize_script(
 			$this->plugin_slug, 
@@ -146,6 +146,23 @@ class mc_gp_plugin
 				update_option( $this->plugin_namespace . $s_field_key, $this->get_setting( $s_field_key ) );
 			}
 		}
+	}
+	
+	
+	/* GET ALL SETTINGS IN A SIMPLE KEY=>VALUE TYPE ARRAY  */ 
+	private function get_settings_array()
+	{
+		$a_result = array();
+	
+		foreach ( $this->settings as $s_setting_key => $a_setting )
+		{
+			foreach( $a_setting['fields'] as $s_field_key => $m_field ) 
+			{		
+				$a_result[ $s_field_key ] = $this->get_setting( $s_field_key ) ;
+			}
+		}
+		
+		return $a_result;
 	}
 	
 	
